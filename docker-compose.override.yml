@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  proxy:
+    build:
+      context: ./.docker/caddy
+      target: local
+    image: os_proxy_local
+    volumes:
+      - ./.docker/caddy/etc/caddy.local:/etc/caddy

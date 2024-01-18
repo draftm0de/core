@@ -1,0 +1,4 @@
+*.dev.motorhaube.at  {
+    tls internal
+    reverse_proxy http://motorhaube:80
+}

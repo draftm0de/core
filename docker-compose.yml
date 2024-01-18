@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  proxy:
+    container_name: os_caddy
+    build:
+      context: ./.docker/caddy
+      target: prod
+      args:
+        IMAGE_TAG: 2.7.5
+    image: os_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - os-proxy-network
+    volumes:
+      - ./caddy-config:/config
+      - ./caddy-data:/data
+
+networks:
+  os-proxy-network:
+    name: os-network-proxy
