@@ -1,0 +1,23 @@
+{
+	log {
+		output stdout
+		level {$LOG_LEVEL:ERROR}
+		format {$LOG_FORMAT:json}
+	}
+}
+
+# for local health check
+:80 {
+    # skip_log
+}
+
+www.dev.demo1.io {
+	tls internal
+	reverse_proxy http://demo1:80
+}
+
+www.dev.demo2.io {
+	tls internal
+	reverse_proxy http://demo2:80
+}
+

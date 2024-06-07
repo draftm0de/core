@@ -1,3 +1,0 @@
-*.motorhaube.at  {
-    reverse_proxy http://motorhaube:80
-}

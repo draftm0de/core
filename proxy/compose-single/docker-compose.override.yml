@@ -1,0 +1,7 @@
+services:
+  proxy:
+    networks:
+      default:
+        aliases:
+          - www.dev.demo1.io
+          - www.dev.demo2.io

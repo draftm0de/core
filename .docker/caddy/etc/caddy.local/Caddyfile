@@ -1,7 +1,0 @@
-{
-    log {
-        output stdout
-        level DEBUG
-    }
-}
-import sites/*.local
