@@ -2,13 +2,12 @@ services:
   webserver:
     build:
       dockerfile: ../../../../.docker/caddy/Dockerfile
-#      args:
-#        TZ: ${TZ}
     environment:
+      TZ: ${TZ}
       HTML_CONTENT_FOLDER: ${HTML_CONTENT_FOLDER:-/var/www/html}
-      PHP_WORK_DIR: ${PHP_WORK_DIR}
-      PHP_PORT: ${PHP_PORT:-9000}
-      PHP_CONTAINER: ${PHP_CONTAINER:-php}
+      PHP_PORT: ${PHP_LISTEN_PORT}
+      PHP_ROOT_FOLDER: ${PHP_WORK_DIR}
+      PHP_CONTAINER_NAME: ${PHP_CONTAINER_NAME}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -19,21 +18,23 @@ services:
         target: 443
 
   php:
+#    container_name: ${PHP_CONTAINER_NAME}
     build:
       context: ../../../../.docker/php-fpm
       args:
         TZ: ${TZ}
         WORK_DIR: ${PHP_WORK_DIR}
+        PORT: ${PHP_LISTEN_PORT}
+#    ports:
+#      - "${PHP_LISTEN_PORT}:${PHP_LISTEN_PORT}"
     expose:
-      - ${PHP_PORT}
-    healthcheck:
-      test: [ "CMD", "docker-healthcheck", "-connect" ]
-#      test: [ "CMD", "docker-healthcheck", "-connect=9000" ]
-#      test: [ "CMD", "docker-healthcheck", "-connect=/var/run/php/php-fpm.sock" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 30s
+      - ${PHP_LISTEN_PORT}
+#    healthcheck:
+#      test: [ "CMD", "docker-healthcheck", "--connect=${PHP_LISTEN_PORT}" ]
+#      interval: 10s
+#      timeout: 3s
+#      retries: 3
+#      start_period: 30s
 
 volumes:
   caddy_data:
