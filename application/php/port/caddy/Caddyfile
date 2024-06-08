@@ -6,18 +6,15 @@
 	}
 }
 
-# for local health check
-:80 {
-    # skip_log
-}
-
 www.dev.demo1.io {
 	tls internal
-    root * {$HTML_CONTENT_FOLDER:/var/www/html}
+    root * {$HTML_CONTENT_FOLDER}
     file_server
 }
 
 api.dev.demo1.io {
 	tls internal
-    php_fastcgi {$PHP_CONTAINER:php}:{$PHP_PORT:9000}
+	root * {$PHP_WORK_DIR}
+	php_fastcgi {$PHP_CONTAINER}:{$PHP_PORT}
+	rewrite * /index.php
 }

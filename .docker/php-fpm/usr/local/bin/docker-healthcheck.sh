@@ -7,11 +7,11 @@ while [[ $y -lt ${#ARGUMENTS[@]} ]]
 do
   ARGUMENT=${ARGUMENTS[$y]}
   case ${ARGUMENT} in
-    -connect=*)
+    --connect=*)
       PORT="${ARGUMENT#*=}"
       (cgi-fcgi -bind -connect "${PORT}") > /dev/null
     ;;
-    -connect)
+    --connect)
       (cgi-fcgi -bind -connect :9000) > /dev/null
     ;;
     *)

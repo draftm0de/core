@@ -8,4 +8,4 @@ services:
 
   php:
     volumes:
-      - ./../../../../.content/php/plain:${PHP_WORKING_DIR}
+      - ./../../../../.content/php/plain:${PHP_WORK_DIR}

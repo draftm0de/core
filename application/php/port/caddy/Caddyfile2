@@ -1,0 +1,31 @@
+{
+	log {
+		output stdout
+		level {$LOG_LEVEL:ERROR}
+		format {$LOG_FORMAT:json}
+	}
+}
+
+# for local health check
+:80 {
+    # skip_log
+}
+
+www.dev.demo1.io {
+	tls internal
+    root * {$HTML_CONTENT_FOLDER:/var/www/html}
+    file_server
+}
+
+api.dev.demo1.io {
+	tls internal
+	php_fastcgi php:9000
+}
+
+api.dev.demo.io {
+	tls internal
+    php_fastcgi {$PHP_CONTAINER:php}:{$PHP_PORT:9000} {
+        index index.php
+        try_files {path} {path}/index.php?{query}
+    }
+}
