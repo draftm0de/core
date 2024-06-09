@@ -23,7 +23,7 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && apk upgrade --available \
 # --- add date.timezone to php conf ---
  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
- && printf '[Date]\ndate.timezone="%s"\n', $TZ > /usr/local/etc/php/conf.d/zz.date.timezone.ini \
+ && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.timezone.ini \
 # --- add www.list to php conf ---
  && printf '[www]\nlisten=%s\n' $PORT > /usr/local/etc/php/conf.d/zz.www.listen.ini \
 # --- provide custom healthcheck ---
