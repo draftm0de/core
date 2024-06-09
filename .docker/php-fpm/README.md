@@ -12,7 +12,7 @@ RUN apk add --update --no-cache tzdata \
  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 
 # --- set timezone for php --- 
- && printf '[Date]\ndate.timezone="%s"\n', $TZ > /usr/local/etc/php/conf.d/zz.date.timezone.ini \
+ && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.timezone.ini \
 ```
 #### php-fpm listen on a port
 ```
@@ -21,7 +21,7 @@ RUN printf '[www]\nlisten=9000' > /usr/local/etc/php/conf.d/zz.www.listen.ini
 ```
 ```
 # --- add www.list to php conf (dynamic) ---
-RUN printf '[www]\nlisten="%s"\n', $PORT > /usr/local/etc/php/conf.d/zz.www.listen.ini \
+RUN printf '[www]\nlisten=%s\n' $PORT > /usr/local/etc/php/conf.d/zz.www.listen.ini \
 ```
 #### php-fpm listen on a socket
 ```
