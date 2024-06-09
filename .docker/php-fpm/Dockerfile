@@ -31,4 +31,6 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
 
 WORKDIR $WORK_DIR
 
+EXPOSE $PORT
+
 CMD ["php-fpm"]
