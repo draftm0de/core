@@ -1,0 +1,20 @@
+{
+	log {
+		output stdout
+		level {$LOG_LEVEL:ERROR}
+		format {$LOG_FORMAT:json}
+	}
+}
+
+www.dev.demo.io {
+	tls internal
+    root * {$HTML_CONTENT_FOLDER}
+    file_server
+}
+
+api.dev.demo.io {
+	tls internal
+	root * {$PHP_ROOT_FOLDER}
+	php_fastcgi {$PHP_FASTCGI}
+	rewrite * /index.php
+}

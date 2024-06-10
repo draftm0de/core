@@ -3,6 +3,8 @@ FROM php:8.2-fpm-alpine
 ARG WORK_DIR
 ARG TIME_ZONE
 ARG WWW_LISTEN=9000
+ARG WWW_LISTEN_OWNER=0
+ARG WWW_LISTEN_GROUP=0
 
 ENV TZ=${TIME_ZONE}
 ENV APP_ENV=prod
@@ -19,6 +21,8 @@ ENV APK_ADD_NO_CACHE \
 
 # --- provide custom healthcheck ---
 COPY $DOCKER_BIN_PATH/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
+# --- provide custom healthcheck ---
+COPY $DOCKER_BIN_PATH/create-socket-user.sh /usr/local/bin/create-socket-user
 # --- default configurations for
 # - zz.global.conf
 # - zz.www.conf
@@ -36,8 +40,12 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.ini \
 # --- set www.listen ---
  && sed -i 's/{WWW_LISTEN}/'${WWW_LISTEN}'/' /usr/local/etc/php-fpm.d/zz.www.conf \
- # --- provide custom healthcheck ---
- && chmod +x /usr/local/bin/docker-healthcheck
+ # --- make custom scripts executable ---
+ && chmod +x /usr/local/bin/docker-healthcheck \
+ && chmod +x /usr/local/bin/create-socket-user
+
+# --- run: create-socket-user ---
+# RUN /usr/local/bin/create-socket-user
 
 WORKDIR $WORK_DIR
 

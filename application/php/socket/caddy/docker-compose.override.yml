@@ -1,0 +1,11 @@
+services:
+  webserver:
+    environment:
+      LOG_LEVEL: DEBUG
+    volumes:
+      - ./etc/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./../../../../.content/html:${HTML_CONTENT_FOLDER}
+
+  php:
+    volumes:
+      - ./../../../../.content/php/plain:${PHP_WORK_DIR}
