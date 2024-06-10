@@ -1,20 +1,15 @@
 services:
   webserver:
     build:
-      dockerfile: ../../../../.docker/caddy/Dockerfile
+      context: ../../../../.docker/nginx
     environment:
       TZ: ${TIME_ZONE}
       HTML_CONTENT_FOLDER: ${HTML_CONTENT_FOLDER:-/var/www/html}
-      PHP_ROOT_FOLDER: ${PHP_WORK_DIR}
       PHP_FASTCGI: ${PHP_CONTAINER_NAME}:${PHP_WWW_LISTEN}
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
+      PHP_WORK_DIR: ${PHP_WORK_DIR}
     ports:
       - published: 80
         target: 80
-      - published: 443
-        target: 443
     depends_on:
       php:
         condition: service_healthy

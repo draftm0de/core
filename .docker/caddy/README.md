@@ -1,6 +1,23 @@
 # caddy webserver
 official page: https://caddyserver.com/
 ## Set up
+### using environment variables
+caddy, out of the box, supports envsource.
+#### example
+```
+docker-compose.yml
+services:
+  webserver:
+    environment:
+      ROOT_FOLDER: my/root/folder
+
+/etc/caddy/Caddyfile
+www.dev.demo.io {
+	tls internal
+    root * {$ROOT_FOLDER}
+    file_server
+}
+```
 ### Timezone
 #### Dockerfile: static
 ```

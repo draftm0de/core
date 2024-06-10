@@ -1,12 +1,13 @@
 FROM php:8.2-fpm-alpine
 
 ARG WORK_DIR
-ARG TZ
-ARG PORT=9000
+ARG TIME_ZONE
+ARG WWW_LISTEN=9000
 
-ENV TZ=${TZ}
+ENV TZ=${TIME_ZONE}
 ENV APP_ENV=prod
 ENV DOCKER_BIN_PATH=/usr/local/bin
+ENV PHP_FPM_PATH=/usr/local/etc/php-fpm.d
 
 ENV APK_ADD_NO_CACHE \
 # optional: like bash more than sh
@@ -18,19 +19,26 @@ ENV APK_ADD_NO_CACHE \
 
 # --- provide custom healthcheck ---
 COPY $DOCKER_BIN_PATH/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
+# --- default configurations for
+# - zz.global.conf
+# - zz.www.conf
+# - zz.www.pm.conf
+COPY $PHP_FPM_PATH $PHP_FPM_PATH
 
 RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && apk upgrade --available \
+# --- remove default php-fpm.d/conf --- \
+ && rm -f $PHP_FPM_PATH/zz-docker.conf \
+ && rm -f $PHP_FPM_PATH/www.conf.default \
+ && rm -f $PHP_FPM_PATH/www.conf \
 # --- add date.timezone to php conf ---
  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
- && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.timezone.ini \
-# --- add www.list to php conf ---
- && printf '[www]\nlisten=%s\n' $PORT > /usr/local/etc/php/conf.d/zz.www.listen.ini \
-# --- provide custom healthcheck ---
+ && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.ini \
+# --- set www.listen ---
+ && sed -i 's/{WWW_LISTEN}/'${WWW_LISTEN}'/' /usr/local/etc/php-fpm.d/zz.www.conf \
+ # --- provide custom healthcheck ---
  && chmod +x /usr/local/bin/docker-healthcheck
 
 WORKDIR $WORK_DIR
-
-EXPOSE $PORT
 
 CMD ["php-fpm"]
