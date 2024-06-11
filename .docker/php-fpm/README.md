@@ -1,43 +1,63 @@
 # PHP-FPM
 our current base-images uses ``php:8.2-fpm-alpine``
+## Build Arguments
+- WORK_DIR _**(required)**_
+- TIME_ZONE _**(required)**_
+- WWW_LISTEN _(default: 9000)_
+- WWW_USER _(default: www-data)_
+- WWW_GROUP _(default: www-data)_
+- WWW_PM _(default: dynamic)_
+- WWW_PM_MAX_CHILDREN _(default: 5)_
+- WWW_PM_START_SERVERS _(default: 2)_
+- WWW_PM_MIN_SPARE_SERVERS _(default: 1)_
+- WWW_PM_MAX_SPARE_SERVERS _(default: 3)_
 ## Set up (Dockerfile)
 Customized PHP (ini/conf) files are created prefixed with ``zz.{what.ever}.{ini/conf}``<br>
 Prefixed with {zz.} because we want our customizations being included at the end to overwrite previous ones.
-#### Timezone
+### Timezone
 ```
 # add tzadata
 RUN apk add --update --no-cache tzdata \
 
 # --- set timezone for container ---
  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-
-# --- set timezone for php --- 
- && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.timezone.ini \
 ```
-#### php-fpm listen on a port
-In default the used image (php:8.2-fpm-alpine) expose port 9000. That means your ``docker compose ps`` will always show you 9000/tcp.
+### php-fpm listen
+In default the used image (php:8.2-fpm-alpine) expose port 9000.<br>
+That means your ``docker compose ps`` will always show you 9000/tcp.
 ```
 NAME                IMAGE             COMMAND                  SERVICE     CREATED         STATUS         PORTS
 caddy-php-1         caddy-php         "docker-php-entrypoi…"   php         3 seconds ago   Up 3 seconds   9000/tcp
 ```
-- our used php-base-image (.docker/php-fpm/Dockerfile) handle the build argument WWW_LISTEN to set the [www] listen = {WWW_LISTEN}. 
-- to proxy (e.g. with caddy directive php_fastcgi) you need to proxy to {container_name}:{port}
-- It´s about how you configure PHP-FPM to listen for<br/>
-_default php:8.2-fpm-alpine expose 9000 and set the [www] listen = 9000_
-- There is no need to set up any EXPOSE directive in your docker-compose.yml
-- There is no need to set up any PORT directive in your docker-compose.yml
+**but**<br/>
+only the [www] listen = {} directive is on what PHP-FPM is listening
+- there is no need to set up any EXPOSE directive in your docker-compose.yml
+- there is no need to set up any EXPOSE directive in your Dockerfile
+- there is no need to set up any PORT directive in your docker-compose.yml
+#### php-fpm listen on a port
+Just set WWW_LISTEN to e.g. 9090, that´s it.<br/>
+You just have to be sure, that your webserver (e.g. caddy) and the php container share the same volume.<br/>
 ```
-# --- add www.list to php conf (static) ---
-RUN printf '[www]\nlisten=9000' > /usr/local/etc/php/conf.d/zz.www.listen.ini
+services:
+  webserver:
+    volumes:
+      - sock:/socket
+
+  php:
+    volumes:
+      - sock:/socket
+
+volumes:
+  sock:
 ```
+The php-fpm directive for listen will look like
 ```
-# --- add www.list to php conf (dynamic (.docker/php-fpm/Dockerfile)) ---
-RUN printf '[www]\nlisten=%s\n' $PORT > /usr/local/etc/php/conf.d/zz.www.listen.ini \
+[www]
+listen=/socket/web.fpm
+listen.mode = 0666
 ```
 #### php-fpm listen on a socket
-```
-...tbd
-```
+Just set WWW_LISTEN to e.g. (sock/docker.socket), that´s it
 ## Healthcheck
 using */usr/local/bin/docker-healthcheck.sh* as already implemented
 ### php-fpm listen on a port
@@ -56,7 +76,7 @@ example via docker-compose
 example via docker-compose
 ```
     healthcheck:
-      test: ["CMD", "docker-healthcheck", "-connect=/var/run/php/php-fpm.sock"]
+      test: ["CMD", "docker-healthcheck", "-connect=unix:/socket/web.fpm"]
       interval: 10s
       timeout: 3s
       retries: 3

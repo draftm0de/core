@@ -1,15 +1,17 @@
 services:
   webserver:
     build:
-      dockerfile: ../../../../.docker/caddy/Dockerfile
+      context: ../../../../.docker/caddy
+      args:
+        TIME_ZONE: ${TIME_ZONE}
     environment:
-      TZ: ${TIME_ZONE}
       HTML_CONTENT_FOLDER: ${HTML_CONTENT_FOLDER:-/var/www/html}
-      PHP_ROOT_FOLDER: ${PHP_WORK_DIR}
-      PHP_FASTCGI: ${PHP_CONTAINER_NAME}:${PHP_WWW_LISTEN}
+      PHP_WORK_DIR: ${PHP_WORK_DIR}
+      PHP_FASTCGI: unix/${PHP_WWW_LISTEN}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+      - sock:${PHP_WWW_LISTEN_PATH}
     ports:
       - published: 80
         target: 80
@@ -26,6 +28,8 @@ services:
         TIME_ZONE: ${TIME_ZONE}
         WORK_DIR: ${PHP_WORK_DIR}
         WWW_LISTEN: ${PHP_WWW_LISTEN}
+    volumes:
+      - sock:${PHP_WWW_LISTEN_PATH}
     healthcheck:
       test: [ "CMD", "docker-healthcheck", "--connect=${PHP_WWW_LISTEN}" ]
       interval: 10s
@@ -36,3 +40,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  sock:

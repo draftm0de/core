@@ -1,0 +1,39 @@
+services:
+  webserver:
+    build:
+      context: ../../../../.docker/caddy
+      args:
+        TIME_ZONE: ${TIME_ZONE}
+    environment:
+      HTML_CONTENT_FOLDER: ${HTML_CONTENT_FOLDER:-/var/www/html}
+      PHP_WORK_DIR: ${PHP_WORK_DIR}
+      PHP_FASTCGI: ${PHP_CONTAINER_NAME}:${PHP_WWW_LISTEN}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - published: 80
+        target: 80
+      - published: 443
+        target: 443
+    depends_on:
+      php:
+        condition: service_healthy
+
+  php:
+    build:
+      context: ../../../../.docker/php-fpm
+      args:
+        TIME_ZONE: ${TIME_ZONE}
+        WORK_DIR: ${PHP_WORK_DIR}
+        WWW_LISTEN: ${PHP_WWW_LISTEN}
+    healthcheck:
+      test: [ "CMD", "docker-healthcheck", "--connect=${PHP_WWW_LISTEN}" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  caddy_data:
+  caddy_config:

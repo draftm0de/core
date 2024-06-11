@@ -3,7 +3,7 @@ services:
     environment:
       LOG_LEVEL: DEBUG
     volumes:
-      - ./etc/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./../.etc/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./../../../../.content/html:${HTML_CONTENT_FOLDER}
 
   php:

@@ -1,7 +1,6 @@
 FROM nginx:alpine3.19
 
 ARG TIME_ZONE
-
 ENV TZ=${TIME_ZONE}
 
 ENV APK_ADD_NO_CACHE \

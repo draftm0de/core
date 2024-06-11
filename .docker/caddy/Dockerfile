@@ -1,5 +1,8 @@
 FROM caddy
 
+ARG TIME_ZONE
+ENV TZ=${TIME_ZONE}
+
 ENV APK_ADD \
     tzdata \
     nss-tools \

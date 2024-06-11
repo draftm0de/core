@@ -2,11 +2,12 @@ services:
   webserver:
     build:
       context: ../../../../.docker/nginx
+      args:
+        TIME_ZONE: ${TIME_ZONE}
     environment:
-      TZ: ${TIME_ZONE}
       HTML_CONTENT_FOLDER: ${HTML_CONTENT_FOLDER:-/var/www/html}
-      PHP_FASTCGI: ${PHP_CONTAINER_NAME}:${PHP_WWW_LISTEN}
       PHP_WORK_DIR: ${PHP_WORK_DIR}
+      PHP_FASTCGI: ${PHP_CONTAINER_NAME}:${PHP_WWW_LISTEN}
     ports:
       - published: 80
         target: 80

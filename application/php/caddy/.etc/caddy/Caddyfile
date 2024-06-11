@@ -14,7 +14,7 @@ www.dev.demo.io {
 
 api.dev.demo.io {
 	tls internal
-	root * {$PHP_ROOT_FOLDER}
+	root * {$PHP_WORK_DIR}
 	php_fastcgi {$PHP_FASTCGI}
 	rewrite * /index.php
 }

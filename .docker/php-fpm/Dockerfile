@@ -2,14 +2,29 @@ FROM php:8.2-fpm-alpine
 
 ARG WORK_DIR
 ARG TIME_ZONE
-ARG WWW_LISTEN=9000
-ARG WWW_LISTEN_OWNER=0
-ARG WWW_LISTEN_GROUP=0
-
 ENV TZ=${TIME_ZONE}
-ENV APP_ENV=prod
+ARG WWW_LISTEN=9000
+ENV WWW_LISTEN=${WWW_LISTEN}
+
+ARG WWW_USER=www-data
+ENV WWW_USER=${WWW_USER}
+ARG WWW_GROUP=www-data
+ENV WWW_GROUP=${WWW_GROUP}
+ARG WWW_PM=dynamic
+ENV WWW_PM=${WWW_PM}
+ARG WWW_PM_MAX_CHILDREN=5
+ENV WWW_PM_MAX_CHILDREN=${WWW_PM_MAX_CHILDREN}
+ARG WWW_PM_START_SERVERS=2
+ENV WWW_PM_START_SERVERS=${WWW_PM_START_SERVERS}
+ARG WWW_PM_MIN_SPARE_SERVERS=1
+ENV WWW_PM_MIN_SPARE_SERVERS=${WWW_PM_MIN_SPARE_SERVERS}
+ARG WWW_PM_MAX_SPARE_SERVERS=3
+ENV WWW_PM_MAX_SPARE_SERVERS=${WWW_PM_MAX_SPARE_SERVERS}
+
+# internal folders
 ENV DOCKER_BIN_PATH=/usr/local/bin
 ENV PHP_FPM_PATH=/usr/local/etc/php-fpm.d
+ENV PHP_CONF_PATH=/usr/local/etc/php/conf.d
 
 ENV APK_ADD_NO_CACHE \
 # optional: like bash more than sh
@@ -21,13 +36,9 @@ ENV APK_ADD_NO_CACHE \
 
 # --- provide custom healthcheck ---
 COPY $DOCKER_BIN_PATH/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
-# --- provide custom healthcheck ---
-COPY $DOCKER_BIN_PATH/create-socket-user.sh /usr/local/bin/create-socket-user
-# --- default configurations for
-# - zz.global.conf
-# - zz.www.conf
-# - zz.www.pm.conf
+# --- default configurations for php-fpm.d and conf.d
 COPY $PHP_FPM_PATH $PHP_FPM_PATH
+COPY $PHP_CONF_PATH $PHP_CONF_PATH
 
 RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && apk upgrade --available \
@@ -37,16 +48,11 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && rm -f $PHP_FPM_PATH/www.conf \
 # --- add date.timezone to php conf ---
  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
- && printf '[Date]\ndate.timezone="%s"\n' $TZ > /usr/local/etc/php/conf.d/zz.date.ini \
-# --- set www.listen ---
- && sed -i 's/{WWW_LISTEN}/'${WWW_LISTEN}'/' /usr/local/etc/php-fpm.d/zz.www.conf \
  # --- make custom scripts executable ---
- && chmod +x /usr/local/bin/docker-healthcheck \
- && chmod +x /usr/local/bin/create-socket-user
-
-# --- run: create-socket-user ---
-# RUN /usr/local/bin/create-socket-user
+ && chmod +x /usr/local/bin/docker-healthcheck
 
 WORKDIR $WORK_DIR
+
+ENV APP_ENV=prod
 
 CMD ["php-fpm"]
