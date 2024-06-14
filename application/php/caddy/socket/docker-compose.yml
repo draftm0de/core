@@ -1,13 +1,32 @@
+x-build-args-webserver: &build-args-webserver
+  TIME_ZONE: Europe/Vienna
+  PHP_WORK_DIR: /var/www/app
+  PHP_FAST_CGI: unix//sock/docker.sock
+  HTML_CONTENT_FOLDER: /var/www/html
+x-build-args-php: &build-args-php
+  WORK_DIR: /var/www/app
+  TIME_ZONE: Europe/Vienna
+  WWW_LISTEN: /sock/docker.sock
+
 services:
-  webserver:
+# build base images
+  build_webserver:
+    image: ${BASE_IMAGE_WEBSERVER_NAME}:1.0.0
     build:
       context: ../../../../.docker/caddy
       args:
-        TIME_ZONE: ${TIME_ZONE}
-    environment:
-      HTML_CONTENT_FOLDER: ${HTML_CONTENT_FOLDER:-/var/www/html}
-      PHP_WORK_DIR: ${PHP_WORK_DIR}
-      PHP_FASTCGI: unix/${PHP_WWW_LISTEN}
+        TIME_ZONE: Europe/Vienna
+    profiles:
+      - build
+
+  webserver:
+    image: ${APPLICATION_DOCKER_IMAGE_PREFIX}-webserver:1.0.0
+    build:
+      dockerfile: Dockerfile.caddy
+      target: prod
+      args:
+        IMAGE_NAME: ${BASE_IMAGE_WEBSERVER_NAME}
+        IMAGE_TAG: ${BASE_IMAGE_WEBSERVER_TAG:-latest}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -25,9 +44,7 @@ services:
     build:
       context: ../../../../.docker/php-fpm
       args:
-        TIME_ZONE: ${TIME_ZONE}
-        WORK_DIR: ${PHP_WORK_DIR}
-        WWW_LISTEN: ${PHP_WWW_LISTEN}
+        <<: *build-args-php
     volumes:
       - sock:${PHP_WWW_LISTEN_PATH}
     healthcheck:

@@ -1,0 +1,13 @@
+ARG IMAGE_TAG
+ENV IMAGE_TAG=${IMAGE_TAG}
+ARG IMAGE_NAME
+ENV IMAGE_NAME=${IMAGE_NAME}
+
+FROM ${IMAGE_NAME}:${IMAGE_TAG} as prod
+COPY /etc/caddy/sites-enabled/prod /etc/caddy/sites-enabled
+
+FROM ${IMAGE_NAME}:${IMAGE_TAG} as staging
+COPY /etc/caddy/sites-enabled/staging /etc/caddy/sites-enabled
+
+FROM ${IMAGE_NAME}:${IMAGE_TAG} as dev
+COPY /etc/caddy/sites-enabled/dev /etc/caddy/sites-enabled

@@ -1,5 +1,5 @@
 # core
-This repository tries to provide solutions for a couple of different issues related to
+This repository provides solutions for a couple of different issues related to
 - docker
 - docker-compose
 - php
@@ -7,6 +7,8 @@ This repository tries to provide solutions for a couple of different issues rela
 - caddy
 - openresty
 - reverse proxy
+
+This repository explain how some stuff works under the hood.
 
 ## domains
 we are using for caddy (self certificate supported)
