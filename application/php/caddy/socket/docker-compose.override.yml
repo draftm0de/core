@@ -1,13 +1,17 @@
 services:
   webserver:
+    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}-dev:${WEBSERVER_RUNTIME_IMAGE_TAG}
     build:
       target: dev
     environment:
       LOG_LEVEL: DEBUG
     volumes:
-      - ./etc/caddy/sites-enabled/dev:/etc/caddy/sites-enabled
-      - ./../../../../.content/html:$HTML_CONTENT_FOLDER
+      - ./.build/etc/caddy/sites-enabled/dev:/etc/caddy/sites-enabled
+      - ./${WEBSERVER_ARG_SOURCE_PATH}:${WEBSERVER_ARG_TARGET_PATH}
 
   php:
+    image: ${PHP_RUNTIME_IMAGE_NAME}-dev:${PHP_RUNTIME_IMAGE_TAG}
+    build:
+      target: dev
     volumes:
-      - ./../../../../.content/php/plain:$PHP_WORK_DIR
+      - ./${PHP_ARG_SOURCE_PATH}:${PHP_ARG_TARGET_PATH}

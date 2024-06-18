@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2-fpm-alpine as production
 
 ARG WORK_DIR
 ARG TIME_ZONE
@@ -52,7 +52,7 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && chmod +x /usr/local/bin/docker-healthcheck
 
 WORKDIR $WORK_DIR
-
 ENV APP_ENV=prod
 
-CMD ["php-fpm"]
+FROM production as dev
+ENV APP_ENV=dev

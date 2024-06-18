@@ -1,32 +1,16 @@
-x-build-args-webserver: &build-args-webserver
-  TIME_ZONE: Europe/Vienna
-  PHP_WORK_DIR: /var/www/app
-  PHP_FAST_CGI: unix//sock/docker.sock
-  HTML_CONTENT_FOLDER: /var/www/html
-x-build-args-php: &build-args-php
-  WORK_DIR: /var/www/app
-  TIME_ZONE: Europe/Vienna
-  WWW_LISTEN: /sock/docker.sock
-
 services:
-# build base images
-  build_webserver:
-    image: ${BASE_IMAGE_WEBSERVER_NAME}:1.0.0
-    build:
-      context: ../../../../.docker/caddy
-      args:
-        TIME_ZONE: Europe/Vienna
-    profiles:
-      - build
-
   webserver:
-    image: ${APPLICATION_DOCKER_IMAGE_PREFIX}-webserver:1.0.0
+    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
     build:
       dockerfile: Dockerfile.caddy
-      target: prod
+      target: production
       args:
         IMAGE_NAME: ${BASE_IMAGE_WEBSERVER_NAME}
-        IMAGE_TAG: ${BASE_IMAGE_WEBSERVER_TAG:-latest}
+        IMAGE_TAG: ${BASE_IMAGE_WEBSERVER_TAG}
+        HTML_SOURCE_PATH: ${WEBSERVER_ARG_SOURCE_PATH}
+        HTML_TARGET_PATH: ${WEBSERVER_ARG_TARGET_PATH}
+        PHP_FASTCGI: unix//${PHP_WWW_LISTEN}
+        PHP_ROOT_PATH: ${PHP_ARG_TARGET_PATH}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -41,10 +25,15 @@ services:
         condition: service_healthy
 
   php:
+    image: ${PHP_RUNTIME_IMAGE_NAME}:${PHP_RUNTIME_IMAGE_TAG}
     build:
-      context: ../../../../.docker/php-fpm
+      dockerfile: Dockerfile.php
+      target: production
       args:
-        <<: *build-args-php
+        IMAGE_NAME: ${BASE_IMAGE_PHP_NAME}
+        IMAGE_TAG: ${BASE_IMAGE_PHP_TAG}
+        CONTENT_SOURCE_PATH: ${PHP_ARG_SOURCE_PATH}
+        CONTENT_TARGET_PATH: ${PHP_ARG_TARGET_PATH}
     volumes:
       - sock:${PHP_WWW_LISTEN_PATH}
     healthcheck:

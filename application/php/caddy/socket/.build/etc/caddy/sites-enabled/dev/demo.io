@@ -1,13 +1,13 @@
 
 www.dev.demo.io {
 	tls internal
-    root * {$HTML_CONTENT_FOLDER}
+    root * {$HTML_PATH}
     file_server
 }
 
 api.dev.demo.io {
 	tls internal
-	root * {$PHP_WORK_DIR}
-	php_fastcgi {$PHP_FASTCGI}
+	root * {$PHP_ROOT_PATH}
+	php_fastcgi unix//sock/docker.sock
 	rewrite * /index.php
 }
