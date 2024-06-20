@@ -1,44 +1,59 @@
-function dc {
-  DOCKER_COMPOSE_FILES="-"
+function dc() {
+  COMPOSE_FILES=()
+  COMPOSE_FILE=""
+  OPTIONS=()
   ARGUMENTS=()
   while [[ $# -gt 0 ]]; do
     arg="$1"
     case $arg in
+	  build|config)
+		ENV_FILE=".build_args"
+		if [[ -f "${ENV_FILE}" ]]; then
+			OPTIONS+=("--env-file $ENV_FILE")
+		fi
+		ARGUMENTS+=("$arg")
+		shift
+	  ;;
       --overlay=*)
         overlay="${arg#*=}"
         if [[ -f "docker-compose.yml" ]]; then
+		  COMPOSE_FILES+=("-f docker-compose.yml")
 		  overlay="docker-compose.$overlay.yml"
           if [[ -f $overlay ]]; then
-		     DOCKER_COMPOSE_FILES=" -f docker-compose.yml -f $overlay "
+		     COMPOSE_FILES+=("-f $overlay")
 		  else
 		     echo "[E] $overlay not found"
-			 exit 1
+			 return
 		  fi
         else
           echo "[E] docker-compose.yml not found"
-          exit 1
+          return
         fi
         shift
       ;;
+	  -f|--file)
+		shift
+		COMPOSE_FILE="$1"
+		OPTIONS+=("-f ${COMPOSE_FILE}")
+		shift
+	  ;;
+	  -*|--*)
+		OPTIONS+=("$arg")
+		shift
+	  ;;
       *)
         ARGUMENTS+=("$arg")
         shift
       ;;
     esac
   done
-  # no overlay argument given: use default docker-compose logic
-  if [[ $DOCKER_COMPOSE_FILES = "-" ]];then
-	if [[ -f "docker-compose.yml" ]]; then
-	  overlay="docker-compose.override.yml"
-	  if [[ -f $overlay ]]; then
-		 DOCKER_COMPOSE_FILES=" -f docker-compose.yml -f $overlay "
-	  else
-		 DOCKER_COMPOSE_FILES=" -f docker-compose.yml "
-		 exit 1
-	  fi
-	else
-		echo "[E] docker-compose.yml not found"
-	fi
+  OPTION=""
+  if [[ "${#OPTIONS[@]}" -ne "" ]]; then
+    OPTION="${OPTIONS[@]} "
   fi
-  docker compose${DOCKER_COMPOSE_FILES}${ARGUMENTS[@]}
+  if [[ -z "${COMPOSE_FILE}" ]]; then
+    OPTION="${COMPOSE_FILES[@]} ${OPTION}"
+  fi
+  docker compose ${OPTION}${ARGUMENTS[@]}
 }
+

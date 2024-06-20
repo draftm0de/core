@@ -12,6 +12,7 @@ services:
       context: ${BASE_IMAGE_PHP_CONTEXT}
       args:
         TIME_ZONE: ${TIME_ZONE}
+        VERSION: ${PHP_VERSION}
         WORK_DIR: /var/www/app
         WWW_LISTEN: /sock/docker.sock
       target: production

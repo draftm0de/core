@@ -1,6 +1,6 @@
 services:
   webserver:
-    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}-dev:${WEBSERVER_RUNTIME_IMAGE_TAG}
+#    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}-dev:${WEBSERVER_RUNTIME_IMAGE_TAG}
     build:
       target: dev
     environment:
@@ -10,7 +10,7 @@ services:
       - ./${WEBSERVER_ARG_SOURCE_PATH}:${WEBSERVER_ARG_TARGET_PATH}
 
   php:
-    image: ${PHP_RUNTIME_IMAGE_NAME}-dev:${PHP_RUNTIME_IMAGE_TAG}
+#    image: ${PHP_RUNTIME_IMAGE_NAME}-dev:${PHP_RUNTIME_IMAGE_TAG}
     build:
       target: dev
     volumes:

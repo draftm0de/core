@@ -52,7 +52,28 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && chmod +x /usr/local/bin/docker-healthcheck
 
 WORKDIR $WORK_DIR
-ENV APP_ENV=prod
 
+# extend production with php composer
 FROM production as dev
-ENV APP_ENV=dev
+
+ARG XDEBUG_CLIENT_PORT=9003
+ENV XDEBUG_CLIENT_PORT=${XDEBUG_CLIENT_PORT}
+ARG XDEBUG_CLIENT_HOST=host.docker.internal
+ENV XDEBUG_CLIENT_HOST=${XDEBUG_CLIENT_HOST}
+ARG XDEBUG_MODE=debug
+ENV XDEBUG_MODE=${XDEBUG_MODE}
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# --- provide custom entry point ---
+COPY $DOCKER_BIN_PATH/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+RUN apk add --no-cache linux-headers \
+ && apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
+ && pecl install xdebug \
+ && docker-php-ext-enable xdebug \
+ && pecl clear-cache \
+ && apk del .build-dependencies \
+ && chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

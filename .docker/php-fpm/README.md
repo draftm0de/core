@@ -2,10 +2,10 @@
 our current base-images uses ``php:8.2-fpm-alpine``
 ## stages
 - production
-- staging [_identical to production_]
-- dev [_identical to production_]
-  - includes (xdebug)
-  - profiling
+- dev [_identical to production_] but additional with
+  - php composer 
+  - xdebug
+
 ## Build Arguments
 - WORK_DIR _**(required)**_
 - TIME_ZONE _**(required)**_
