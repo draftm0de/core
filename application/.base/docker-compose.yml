@@ -1,0 +1,25 @@
+services:
+  caddy:
+    image: ${BASE_IMAGE_CADDY_NAME}:${BASE_IMAGE_CADDY_TAG}
+    build:
+      context: ${BASE_IMAGE_CADDY_CONTEXT}
+      args:
+        TIME_ZONE: ${TIME_ZONE}
+
+  nginx:
+    image: ${BASE_IMAGE_NGINX_NAME}:${BASE_IMAGE_NGINX_TAG}
+    build:
+      context: ${BASE_IMAGE_NGINX_CONTEXT}
+      args:
+        TIME_ZONE: ${TIME_ZONE}
+
+  php:
+    image: ${BASE_IMAGE_PHP_NAME}:${BASE_IMAGE_PHP_TAG}
+    build:
+      context: ${BASE_IMAGE_PHP_CONTEXT}
+      args:
+        TIME_ZONE: ${TIME_ZONE}
+        VERSION: ${PHP_VERSION}
+        WORK_DIR: /var/www/app
+        WWW_LISTEN: /sock/docker.sock
+      target: production

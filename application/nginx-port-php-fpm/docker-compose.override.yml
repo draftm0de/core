@@ -1,0 +1,19 @@
+services:
+  webserver:
+#    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}-dev:${WEBSERVER_RUNTIME_IMAGE_TAG}
+    build:
+      target: dev
+    environment:
+      LOG_LEVEL: DEBUG
+    volumes:
+    # caddy directives
+      - ./webserver/.deploy/etc/nginx/templates/dev:/etc/nginx/templates
+    # static content
+      - ./${DEMO_IO_WEBSERVER_SOURCE_PATH}:${DEMO_IO_WEBSERVER_TARGET_PATH}
+
+  php:
+#    image: ${PHP_RUNTIME_IMAGE_NAME}-dev:${PHP_RUNTIME_IMAGE_TAG}
+    build:
+      target: dev
+    volumes:
+      - ./${DEMO_IO_PHP_SOURCE_PATH}:${DEMO_IO_PHP_TARGET_PATH}

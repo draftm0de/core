@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name www.dev.demo.io;
+    include custom/deny.dotfolder.location;
+    include custom/disable.robots.location;
+    include custom/ignore.favicon.location;
+
+    location / {
+        root   $DEMO_IO_WEBSERVER_ROOT;
+        index  index.html index.htm;
+    }
+}
+
+server {
+    listen 80;
+    server_name api.dev.demo.io;
+
+    location / {
+        include fastcgi_params;
+        include custom/proxy.conf;
+        fastcgi_pass $DEMO_IO_PHP_FASTCGI_GATEWAY;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $DEMO_IO_PHP_ROOT/index.php;
+    }
+}

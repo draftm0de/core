@@ -2,11 +2,10 @@
 This repository provides solutions for a couple of different issues related to
 - docker
 - docker-compose
-- php
+- php-fpm
 - nginx
 - caddy
 - openresty
-- reverse proxy
 
 This repository explain how some stuff works under the hood.
 
@@ -33,9 +32,4 @@ and for nginx (no self certificate support)
 ### php
 - [PHP-FPM](./.docker/php-fpm/README.md)
 ## Solutions
-### PHP + Caddy
-- proxy to php by port
-- proxy to php by socket
-### PHP + Nginx
-- proxy to php by port
-- proxy to php by socket
+[Read more...](./application/README.md)

@@ -1,24 +1,27 @@
+# ---------------------------------------------------------------
+# production stage
+# ---------------------------------------------------------------
 FROM php:8.2-fpm-alpine as production
 
 ARG WORK_DIR
 ARG TIME_ZONE
-ENV TZ=${TIME_ZONE}
 ARG WWW_LISTEN=9000
-ENV WWW_LISTEN=${WWW_LISTEN}
-
 ARG WWW_USER=www-data
-ENV WWW_USER=${WWW_USER}
 ARG WWW_GROUP=www-data
-ENV WWW_GROUP=${WWW_GROUP}
 ARG WWW_PM=dynamic
-ENV WWW_PM=${WWW_PM}
 ARG WWW_PM_MAX_CHILDREN=5
-ENV WWW_PM_MAX_CHILDREN=${WWW_PM_MAX_CHILDREN}
 ARG WWW_PM_START_SERVERS=2
-ENV WWW_PM_START_SERVERS=${WWW_PM_START_SERVERS}
 ARG WWW_PM_MIN_SPARE_SERVERS=1
-ENV WWW_PM_MIN_SPARE_SERVERS=${WWW_PM_MIN_SPARE_SERVERS}
 ARG WWW_PM_MAX_SPARE_SERVERS=3
+
+ENV TZ=${TIME_ZONE}
+ENV WWW_LISTEN=${WWW_LISTEN}
+ENV WWW_USER=${WWW_USER}
+ENV WWW_GROUP=${WWW_GROUP}
+ENV WWW_PM=${WWW_PM}
+ENV WWW_PM_MAX_CHILDREN=${WWW_PM_MAX_CHILDREN}
+ENV WWW_PM_START_SERVERS=${WWW_PM_START_SERVERS}
+ENV WWW_PM_MIN_SPARE_SERVERS=${WWW_PM_MIN_SPARE_SERVERS}
 ENV WWW_PM_MAX_SPARE_SERVERS=${WWW_PM_MAX_SPARE_SERVERS}
 
 # internal folders
@@ -53,7 +56,9 @@ RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
 
 WORKDIR $WORK_DIR
 
-# extend production with php composer
+# ---------------------------------------------------------------
+# dev stage
+# ---------------------------------------------------------------
 FROM production as dev
 
 ARG XDEBUG_CLIENT_PORT=9003

@@ -1,0 +1,16 @@
+services:
+  caddy:
+    image: ${BASE_IMAGE_CADDY_NAME}-dev:${BASE_IMAGE_CADDY_TAG}
+    build:
+      context: ${BASE_IMAGE_CADDY_CONTEXT}
+
+  nginx:
+    image: ${BASE_IMAGE_NGINX_NAME}-dev:${BASE_IMAGE_NGINX_TAG}
+    build:
+      context: ${BASE_IMAGE_NGINX_CONTEXT}
+
+  php:
+    image: ${BASE_IMAGE_PHP_NAME}-dev:${BASE_IMAGE_PHP_TAG}
+    build:
+      context: ${BASE_IMAGE_PHP_CONTEXT}
+      target: dev
