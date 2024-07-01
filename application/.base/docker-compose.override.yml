@@ -9,6 +9,11 @@ services:
     build:
       context: ${BASE_IMAGE_NGINX_CONTEXT}
 
+  mariadb:
+    image: ${BASE_IMAGE_MARIADB_NAME}-dev:${BASE_IMAGE_MARIADB_TAG}
+    build:
+      context: ${BASE_IMAGE_MARIADB_CONTEXT}
+
   php:
     image: ${BASE_IMAGE_PHP_NAME}-dev:${BASE_IMAGE_PHP_TAG}
     build:

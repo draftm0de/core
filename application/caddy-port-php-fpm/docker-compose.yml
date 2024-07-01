@@ -1,9 +1,8 @@
 services:
   webserver:
-#    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
+    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
     build:
-      context: webserver
-      target: production
+      context: ${WEBSERVER_CONTEXT}
       args:
         IMAGE_NAME: ${BASE_IMAGE_WEBSERVER_NAME}
         IMAGE_TAG: ${BASE_IMAGE_WEBSERVER_TAG}
@@ -11,7 +10,7 @@ services:
         DEMO_IO_WEBSERVER_ROOT: ${DEMO_IO_WEBSERVER_TARGET_PATH}
         DEMO_IO_PHP_FASTCGI_GATEWAY: php:${DEMO_IO_PHP_WWW_LISTEN}
         DEMO_IO_PHP_ROOT: ${DEMO_IO_PHP_TARGET_PATH}
-    # environment arguments are not used in prod context, but for all other types (e.v. override)
+    # environment arguments are not used in a production context, but for all other types (e.v. override)
     # its because e.g. override does not use an image, where required ENV are set
     environment:
       DEMO_IO_WEBSERVER_ROOT: ${DEMO_IO_WEBSERVER_TARGET_PATH}
@@ -30,17 +29,16 @@ services:
         condition: service_healthy
 
   php:
-#    image: ${PHP_RUNTIME_IMAGE_NAME}:${PHP_RUNTIME_IMAGE_TAG}
+    image: ${PHP_RUNTIME_IMAGE_NAME}:${PHP_RUNTIME_IMAGE_TAG}
     build:
-      context: php
-      target: production
+      context: ${PHP_CONTEXT}
       args:
         IMAGE_NAME: ${BASE_IMAGE_PHP_NAME}
         IMAGE_TAG: ${BASE_IMAGE_PHP_TAG}
         CONTENT_SOURCE_PATH: ${DEMO_IO_PHP_SOURCE_PATH}
         CONTENT_TARGET_PATH: ${DEMO_IO_PHP_TARGET_PATH}
         WWW_LISTEN: ${DEMO_IO_PHP_WWW_LISTEN}
-    # environment arguments are not used in prod context, but for all other types (e.v. override)
+    # environment arguments are not used in a production context, but for all other types (e.v. override)
     # its because e.g. override does not use an image, where required ENV are set
     environment:
       WWW_LISTEN: ${DEMO_IO_PHP_WWW_LISTEN}

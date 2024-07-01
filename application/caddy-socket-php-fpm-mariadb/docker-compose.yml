@@ -1,3 +1,9 @@
+secrets:
+  database_root_password:
+    file: ./../.secrets/DB_ROOT_PASSWORD
+  database_schema_password:
+    file: ./../.secrets/DB_APP_SCHEMA_PASSWORD
+
 services:
   webserver:
     image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
@@ -10,7 +16,7 @@ services:
         DEMO_IO_WEBSERVER_ROOT: ${DEMO_IO_WEBSERVER_TARGET_PATH}
         DEMO_IO_PHP_FASTCGI_GATEWAY: unix/${DEMO_IO_PHP_WWW_LISTEN}
         DEMO_IO_PHP_ROOT: ${DEMO_IO_PHP_TARGET_PATH}
-    # environment arguments are not used in prod context, but for all other types (e.v. override)
+    # environment arguments are not used in a production context, but for all other types (e.v. override)
     # its because e.g. override does not use an image, where required ENV are set
     environment:
       DEMO_IO_WEBSERVER_ROOT: ${DEMO_IO_WEBSERVER_TARGET_PATH}
@@ -39,10 +45,17 @@ services:
         CONTENT_SOURCE_PATH: ${DEMO_IO_PHP_SOURCE_PATH}
         CONTENT_TARGET_PATH: ${DEMO_IO_PHP_TARGET_PATH}
         WWW_LISTEN: ${DEMO_IO_PHP_WWW_LISTEN}
-    # environment arguments are not used in prod context, but for all other types (e.v. override)
+    secrets:
+      - source: database_schema_password
+        target: /run/secrets/DB_USER_PASSWORD
+    # environment arguments are not used in a production context, but for all other types (e.v. override)
     # its because e.g. override does not use an image, where required ENV are set
     environment:
       WWW_LISTEN: ${DEMO_IO_PHP_WWW_LISTEN}
+    # environment arguments use for every context
+      DATABASE_USER: ${DATABASE_APPLICATION_USER}
+      DATABASE_PASSWORD_FILE: /run/secrets/DB_USER_PASSWORD
+      DATABASE_DSN: "mysql:host=database;dbname=${DATABASE_APPLICATION_SCHEMA};charset=utf8"
     volumes:
       - sock:${DEMO_IO_PHP_WWW_LISTEN_PATH}
     healthcheck:
@@ -51,8 +64,33 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: ${BASE_IMAGE_DATABASE_NAME}:${BASE_IMAGE_DATABASE_TAG}
+    restart: always
+    secrets:
+      - source: database_root_password
+        target: /run/secrets/DB_ROOT_PASSWORD
+      - source: database_schema_password
+        target: /run/secrets/DB_USER_PASSWORD
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/DB_ROOT_PASSWORD
+      MARIADB_DATABASE: ${DATABASE_APPLICATION_SCHEMA}
+      MARIADB_USER: ${DATABASE_APPLICATION_USER}
+      MARIADB_PASSWORD_FILE: /run/secrets/DB_USER_PASSWORD
+      BASE_IMAGE: ${BASE_IMAGE_DATABASE_NAME}:${BASE_IMAGE_DATABASE_TAG}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 2s
+      retries: 120
 
 volumes:
   caddy_data:
   caddy_config:
   sock:
+  database:

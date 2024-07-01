@@ -13,6 +13,13 @@ services:
       args:
         TIME_ZONE: ${TIME_ZONE}
 
+  mariadb:
+    image: ${BASE_IMAGE_MARIADB_NAME}:${BASE_IMAGE_MARIADB_TAG}
+    build:
+      context: ${BASE_IMAGE_MARIADB_CONTEXT}
+      args:
+        TIME_ZONE: ${TIME_ZONE}
+
   php:
     image: ${BASE_IMAGE_PHP_NAME}:${BASE_IMAGE_PHP_TAG}
     build:

@@ -1,9 +1,8 @@
 services:
   webserver:
-#    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
+    image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
     build:
-      context: webserver
-      target: production
+      context: ${WEBSERVER_CONTEXT}
       args:
         IMAGE_NAME: ${BASE_IMAGE_WEBSERVER_NAME}
         IMAGE_TAG: ${BASE_IMAGE_WEBSERVER_TAG}
@@ -18,8 +17,6 @@ services:
       DEMO_IO_PHP_FASTCGI_GATEWAY: unix:/${DEMO_IO_PHP_WWW_LISTEN}
       DEMO_IO_PHP_ROOT: ${DEMO_IO_PHP_TARGET_PATH}
     volumes:
-      - caddy_data:/data
-      - caddy_config:/config
       - sock:${DEMO_IO_PHP_WWW_LISTEN_PATH}
     ports:
       - published: 80
@@ -31,10 +28,9 @@ services:
         condition: service_healthy
 
   php:
-#    image: ${PHP_RUNTIME_IMAGE_NAME}:${PHP_RUNTIME_IMAGE_TAG}
+    image: ${PHP_RUNTIME_IMAGE_NAME}:${PHP_RUNTIME_IMAGE_TAG}
     build:
-      context: php
-      target: production
+      context: ${PHP_CONTEXT}
       args:
         IMAGE_NAME: ${BASE_IMAGE_PHP_NAME}
         IMAGE_TAG: ${BASE_IMAGE_PHP_TAG}
@@ -55,6 +51,4 @@ services:
       start_period: 10s
 
 volumes:
-  caddy_data:
-  caddy_config:
   sock:

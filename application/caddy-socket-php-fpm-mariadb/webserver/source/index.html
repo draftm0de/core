@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="."/>
-    <title>www.demo.io (nginx AND php via port)</title>
+    <title>www.demo.io (caddy AND php via socket)</title>
     <style>
         body {
             font-family: "Gill Sans", sans-serif;
@@ -16,6 +16,7 @@
     <h2><script>document.write(window.location.protocol + "//" + window.location.host);</script></h2>
 </header>
 <h3>path: <script>document.write (window.location.pathname);</script></h3>
-<a href="http://api.dev.demo.io" target="_blank">http://api.dev.demo.io (port based)</a>
+<a href="https://api.dev.demo.io" target="_blank">api.dev.demo.io (socket based)</a><br/>
+<a href="https://api.dev.demo.io/database" target="_blank">api.dev.demo.io/database (socket based)</a>
 </body>
 </html>

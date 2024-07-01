@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------
 # production stage
 # ---------------------------------------------------------------
-FROM php:8.2-fpm-alpine as production
+FROM php:8.2-fpm-alpine AS production
 
 ARG WORK_DIR
 ARG TIME_ZONE
@@ -37,6 +37,10 @@ ENV APK_ADD_NO_CACHE \
 # required to set timezone
     tzdata
 
+ENV PHP_EXTENSIONS \
+    pdo \
+    pdo_mysql
+
 # --- provide custom healthcheck ---
 COPY $DOCKER_BIN_PATH/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
 # --- default configurations for php-fpm.d and conf.d
@@ -45,6 +49,7 @@ COPY $PHP_CONF_PATH $PHP_CONF_PATH
 
 RUN apk add --update --no-cache ${APK_ADD_NO_CACHE} \
  && apk upgrade --available \
+ && docker-php-ext-install ${PHP_EXTENSIONS} \
 # --- remove default php-fpm.d/conf --- \
  && rm -f $PHP_FPM_PATH/zz-docker.conf \
  && rm -f $PHP_FPM_PATH/www.conf.default \
@@ -59,7 +64,7 @@ WORKDIR $WORK_DIR
 # ---------------------------------------------------------------
 # dev stage
 # ---------------------------------------------------------------
-FROM production as dev
+FROM production AS dev
 
 ARG XDEBUG_CLIENT_PORT=9003
 ENV XDEBUG_CLIENT_PORT=${XDEBUG_CLIENT_PORT}
