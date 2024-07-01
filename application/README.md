@@ -10,6 +10,10 @@ Each folder (based on his name) provide an out of the box running example.
 - (30.06.2024) nginx-socket-php-fpm
 - (01.07.2024) caddy-socket-php-fpm-mariadb
 
+next
+- caddy-socket-php-fpm-vue
+- caddy-socket-api-platform-vue
+
 #### caddy-port-php-fpm
 #### caddy-socket-php-fpm
 #### nginx-port-php-fpm
@@ -55,7 +59,7 @@ The responsibility of an application image is
 _Nothing more and nothing less_<br/><br/>
 
 _Notice_<br/>
-In this examples (and it will be the same in the others) the docker-compose.yml will look a little bit confusing releated to build-arguments and environment arguments.
+In these examples (and it will be the same in the others) the docker-compose.yml will look a little bit confusing releated to build-arguments and environment arguments.
 
 We use them to explicitly visualize which type of action (build, up, ...) has to have which arguments. No matter where they come from (e.g. .env). It´s about transparency.
 
