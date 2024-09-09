@@ -6,13 +6,13 @@ services:
       BASE_IMAGE: ${BASE_IMAGE_WEBSERVER_NAME}-dev:${BASE_IMAGE_WEBSERVER_TAG}
     volumes:
     # caddy directives
-      - ./${WEBSERVER_CONTEXT}/.deploy/etc/caddy/sites-enabled/dev:/etc/caddy/sites-enabled
+      - ./.deploy/${WEBSERVER_CONTEXT}/etc/caddy/sites-enabled/dev:/etc/caddy/sites-enabled
     # static content
-      - ./${WEBSERVER_CONTEXT}/${DEMO_IO_WEBSERVER_SOURCE_PATH}:${DEMO_IO_WEBSERVER_TARGET_PATH}
+      - ./${DEMO_IO_WEBSERVER_SOURCE_PATH}:${DEMO_IO_WEBSERVER_TARGET_PATH}
 
   php:
     image: ${BASE_IMAGE_PHP_NAME}-dev:${BASE_IMAGE_PHP_TAG}
     environment:
       BASE_IMAGE: ${BASE_IMAGE_PHP_NAME}-dev:${BASE_IMAGE_PHP_TAG}
     volumes:
-      - ./${PHP_CONTEXT}/${DEMO_IO_PHP_SOURCE_PATH}:${DEMO_IO_PHP_TARGET_PATH}
+      - ./${PHP_SOURCE_PATH}:${PHP_TARGET_PATH}

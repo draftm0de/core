@@ -24,7 +24,7 @@ next
 
 Each service has to have (build) his own images.<br/>
 
-On top you need some BASE images. The base images will prepare you an image with
+On top, you need some BASE images. The base images will prepare you an image with
 
 - all required application plugins (e.g. composer)
 - all required operating system plugins (e.g. tzdata)

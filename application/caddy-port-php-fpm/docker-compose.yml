@@ -2,20 +2,20 @@ services:
   webserver:
     image: ${WEBSERVER_RUNTIME_IMAGE_NAME}:${WEBSERVER_RUNTIME_IMAGE_TAG}
     build:
-      context: ${WEBSERVER_CONTEXT}
+      dockerfile: ${WEBSERVER_CONTEXT}/Dockerfile
       args:
         IMAGE_NAME: ${BASE_IMAGE_WEBSERVER_NAME}
         IMAGE_TAG: ${BASE_IMAGE_WEBSERVER_TAG}
         DEMO_IO_WEBSERVER_SOURCE_PATH: ${DEMO_IO_WEBSERVER_SOURCE_PATH}
         DEMO_IO_WEBSERVER_ROOT: ${DEMO_IO_WEBSERVER_TARGET_PATH}
         DEMO_IO_PHP_FASTCGI_GATEWAY: php:${DEMO_IO_PHP_WWW_LISTEN}
-        DEMO_IO_PHP_ROOT: ${DEMO_IO_PHP_TARGET_PATH}
+        DEMO_IO_PHP_ROOT: ${PHP_TARGET_PATH}
     # environment arguments are not used in a production context, but for all other types (e.v. override)
     # its because e.g. override does not use an image, where required ENV are set
     environment:
-      DEMO_IO_WEBSERVER_ROOT: ${DEMO_IO_WEBSERVER_TARGET_PATH}
-      DEMO_IO_PHP_FASTCGI_GATEWAY: php:${DEMO_IO_PHP_WWW_LISTEN}
-      DEMO_IO_PHP_ROOT: ${DEMO_IO_PHP_TARGET_PATH}
+      DEMO_IO_WEBSERVER_ROOT: ${WEBSERVER_TARGET_PATH}
+      DEMO_IO_PHP_FASTCGI_GATEWAY: php:${PHP_CONF_WWW_LISTEN}
+      DEMO_IO_PHP_ROOT: ${PHP_TARGET_PATH}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -31,17 +31,17 @@ services:
   php:
     image: ${PHP_RUNTIME_IMAGE_NAME}:${PHP_RUNTIME_IMAGE_TAG}
     build:
-      context: ${PHP_CONTEXT}
+      dockerfile: ${PHP_SOURCE_PATH}/Dockerfile
       args:
         IMAGE_NAME: ${BASE_IMAGE_PHP_NAME}
         IMAGE_TAG: ${BASE_IMAGE_PHP_TAG}
-        CONTENT_SOURCE_PATH: ${DEMO_IO_PHP_SOURCE_PATH}
-        CONTENT_TARGET_PATH: ${DEMO_IO_PHP_TARGET_PATH}
-        WWW_LISTEN: ${DEMO_IO_PHP_WWW_LISTEN}
+        SOURCE_PATH: ${PHP_SOURCE_PATH}
+        TARGET_PATH: ${PHP_TARGET_PATH}
+        WWW_LISTEN: ${PHP_CONF_WWW_LISTEN}
     # environment arguments are not used in a production context, but for all other types (e.v. override)
     # its because e.g. override does not use an image, where required ENV are set
     environment:
-      WWW_LISTEN: ${DEMO_IO_PHP_WWW_LISTEN}
+      WWW_LISTEN: ${PHP_CONF_WWW_LISTEN}
     healthcheck:
       test: [ "CMD", "docker-healthcheck", "--connect=${DEMO_IO_PHP_WWW_LISTEN}" ]
       interval: 10s

@@ -10,7 +10,7 @@ ARG DEMO_IO_WEBSERVER_ROOT
 ARG DEMO_IO_PHP_ROOT
 ARG DEMO_IO_PHP_FASTCGI_GATEWAY
 
-COPY /.deploy/etc/caddy/sites-enabled/prod /etc/caddy/sites-enabled
+COPY /.deploy/${DEMO_IO_WEBSERVER_SOURCE_PATH}/etc/caddy/sites-enabled/prod /etc/caddy/sites-enabled
 COPY ${DEMO_IO_WEBSERVER_SOURCE_PATH} ${DEMO_IO_WEBSERVER_ROOT}
 
 ENV DEMO_IO_WEBSERVER_ROOT=${DEMO_IO_WEBSERVER_ROOT}

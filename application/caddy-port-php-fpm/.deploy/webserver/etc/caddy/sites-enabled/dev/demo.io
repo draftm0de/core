@@ -1,7 +1,7 @@
 
 www.dev.demo.io {
 	tls internal
-    root * {$DEMO_IO_WEBSERVER_ROOT}
+    root * {$WEBSERVER_ROOT}/demo.io
     file_server
 }
 
