@@ -1,19 +1,21 @@
 #!/bin/bash
-# set -e
+set -e
 
 SECRET_PATH="../../.secrets"
+# -------------------------
+# with arguments
+# -------------------------
 CI_DOCKER_USERNAME=$(cat "$SECRET_PATH/DOCKER_USERNAME")
 CI_DOCKER_PASSWORD=$(cat "$SECRET_PATH/DOCKER_PASSWORD")
+REPOSITORY="draftmode/base.caddy"
+# -------------------------
 
-
+# -------------------------
+# source snippets
+# -------------------------
 SCRIPT_PATH="/home/admin/projects/draftm0de/projects/base.scripts"
-REPOSITORY="draftmode/base.caddy:1.0.1"
-REMOTE_SHA=$("${SCRIPT_PATH}/docker.registry.sh" "sha" "$REPOSITORY" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}")
-LOCAL_SHA=$("${SCRIPT_PATH}/docker.sh" "sha" "$REPOSITORY")
-if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
-  echo "[Notice] push & tag start"
-  echo "L:$LOCAL_SHA"
-  echo "R:$REMOTE_SHA"
-else
-  echo "[Notice] push & tag skipped, built image $REPOSITORY is locally identically to his remote version"
-fi
+source "${SCRIPT_PATH}/docker.build.sh"
+
+build "${REPOSITORY}" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}"
+push "${REPOSITORY}" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}"
+cleanup "${REPOSITORY}"
