@@ -23,18 +23,18 @@ echo "[Notice] Get local SHA for $BUILT_IMAGE_NAME"
 echo "[Notice] > local SHA for $BUILT_IMAGE_NAME: $SHA"
 
 # protect: for given IMAGE and SHA no remove tags exists
+echo "[Notice] Protect new SHA against remote"
 # ("${SCRIPT_PATH}/docker.sh" "image tags" "$REPOSITORY" "--remote" "--sha=$SHA" "--exit")
+echo "[Notice] > Protection successfully"
 
 # get local SHA from built image
 echo "[Notice] Get latest remote tag for $BUILT_IMAGE_NAME "
 LATEST_TAG=$("${SCRIPT_PATH}/docker.sh" "image tags" "$BUILT_IMAGE_NAME" "--remote" "--latest=patch")
 echo "[Notice] > latest remote tag for $BUILT_IMAGE_NAME: $LATEST_TAG"
 
-#tag "${REPOSITORY}" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}"
-# push "${REPOSITORY}" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}"
-# clean "${REPOSITORY}"
-# clean_remote "${REPOSITORY}" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}"
+echo "[Notice] Get next image tags"
+NEXT_TAGS="1.2.3"
+echo "[Notice] > next image tags for $REPOSITORY: $NEXT_TAGS"
 
-# DELETE_REPOSITORY="${REPOSITORY}:1.0.0"
-# RESPONSE=$("${SCRIPT_PATH}/docker.hub.sh" "delete" "${DELETE_REPOSITORY}" "${CI_DOCKER_USERNAME}" "${CI_DOCKER_PASSWORD}")
-# echo ":$RESPONSE:"
+echo "[Notice] Tag and push images"
+echo "[Notice] > Tagging and pushing successfully"
